@@ -6,6 +6,8 @@ import { getChoicesFromDatabase } from './Database.js';
 
 import ConfettiCannon from 'react-native-confetti-cannon';
 import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
+import { SoundAssets } from '../assets/SoundAssets.js';
 
 import {FontAwesome} from '@expo/vector-icons';
 import { Asset } from "expo-asset";
@@ -13,10 +15,6 @@ import { SvgUri } from 'react-native-svg'
 import { StatusBar } from 'expo-status-bar';
 
 const initialButtonColors = ['#c7bbc9', '#c7bbc9', '#c7bbc9', '#c7bbc9'];
-
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
 
 //gives back the array for button colors
 const changeButtonColors = (correctChoice, buttonClicked) => {
@@ -33,37 +31,67 @@ const Game = () => {
   const [buttonColors, setButtonColors] = useState(initialButtonColors);
   const [shootConfetti, setShootConfetti] = useState(false);
   const screenBackground = useRef('#8eb69b');
+  const [sound, setSound] = useState();
+  //run on component mount
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: true,
+      interruptionModeIOS: 2,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: 2,
+      playThroughEarpieceAndroid: false
+   });
+  }, []);
+
+
+  //order to play a sound
+  async function playSound(file) {
+    const { sound } = await Audio.Sound.createAsync(file);
+    setSound(sound);
+    sound.playAsync();
+  }
+  // actually play the sound
+  useEffect(() => {
+    return sound ? () => {sound.unloadAsync();} : undefined;
+  }, [sound]);
 
 
   //change these things when a button is clicked
   function optionButtonClicked(buttonClicked) {
+    
     //make the button clicked blue really quickly
     let blueButtons = [...initialButtonColors];
     blueButtons[buttonClicked] = '#1AA7EC';
     setButtonColors(blueButtons);
+    
     //show the correct answers
     setTimeout(function(){
-
-      //Show coin animation
+      setButtonColors(changeButtonColors(correctChoice.current, buttonClicked));
+      //right answer picked
       if (buttonClicked == correctChoice.current) {
+        
+        playSound(SoundAssets.correct);
         setShootConfetti(true);
       }
+      //wrong answer picked
       else {
+        playSound(SoundAssets.wrong);
         screenBackground.current = 'red';
         Haptics.notificationAsync(
           Haptics.NotificationFeedbackType.Warning
         );
       }
+      
 
-    
-      setButtonColors(changeButtonColors(correctChoice.current, buttonClicked));
       setTimeout(function(){
         //reset the animal
         setShootConfetti(false);
         screenBackground.current = '#8eb69b';
         setNewImage(true);
-      }, 2500);      
-    }, 1000)
+        }, 2500);      
+      }, 1000)
 
   }
 
@@ -97,7 +125,7 @@ const Game = () => {
 
       {/*Cannon which will fire whenever shoot is true*/}
         {shootConfetti ? (
-          <ConfettiCannon count={200} origin={{ x: -10, y: 0 }} />
+          <ConfettiCannon count={25} origin={{ x: 250, y: 250 }} explosionSpeed={200} />
         ) : null}
 
       {/* Multiple Choice Buttons */} 
