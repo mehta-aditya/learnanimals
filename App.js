@@ -3,6 +3,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './src/Home.js'
 import Game from './src/Game.js'
+import Profile from './src/Profile.js';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -24,8 +26,8 @@ const App = () => {
           component={Game}
         />
         <Stack.Screen
-          name="DatabaseManager"
-          component={Game}
+          name="Profile"
+          component={Profile}
         />
       </Stack.Navigator>
     </NavigationContainer>

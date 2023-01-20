@@ -1,18 +1,12 @@
-import * as React from 'react';
 import {useState, useEffect, useRef} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Animated, Easing} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import TopNav from './components/TopNav.js';
-import { getChoicesFromDatabase } from './Database.js';
+import { getChoicesFromDatabase } from './backend/Database.js';
 
 import ConfettiCannon from 'react-native-confetti-cannon';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import { SoundAssets } from '../assets/SoundAssets.js';
-
-import {FontAwesome} from '@expo/vector-icons';
-import { Asset } from "expo-asset";
-import { SvgUri } from 'react-native-svg'
-import { StatusBar } from 'expo-status-bar';
 
 const initialButtonColors = ['#c7bbc9', '#c7bbc9', '#c7bbc9', '#c7bbc9'];
 
@@ -45,7 +39,6 @@ const Game = () => {
    });
   }, []);
 
-
   //order to play a sound
   async function playSound(file) {
     const { sound } = await Audio.Sound.createAsync(file);
@@ -72,7 +65,7 @@ const Game = () => {
       //right answer picked
       if (buttonClicked == correctChoice.current) {
         
-        playSound(SoundAssets.correct);
+        playSound(SoundAssets.applause);
         setShootConfetti(true);
       }
       //wrong answer picked
@@ -208,12 +201,6 @@ const styles = StyleSheet.create({
       borderWidth: 3,
       borderRadius: 6,
     },
-    coinsvg: {
-      position: 'absolute',
-      top: -100,
-      left: 0,
-      zIndex: -1
-    }
 });
   
 export default Game;

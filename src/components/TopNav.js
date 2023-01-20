@@ -1,12 +1,36 @@
-import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ImagesAssets } from '../../assets/ImagesAssets';
+import { getLogo } from '../backend/Storage';
 
-function TopNav(props={bgColor: '#8eb69b'}) {
+
+const LogoMap = {
+    'bird': ImagesAssets.bird,
+    'chicken': ImagesAssets.chicken,
+    'lion': ImagesAssets.lion,
+    'monkey': ImagesAssets.monkey,
+    'rabbit': ImagesAssets.rabbit
+}
+
+const getLogoImage = (logo) => {
+    return logo != 0 ? LogoMap[logo] : 0;
+}
+
+
+const TopNav = (props={bgColor: '#8eb69b'}) => {
     const navigation = useNavigation();
+    const [logo, setLogo] = useState(null);
+
+    useEffect(() => {
+        getLogo().then((val) => setLogo(val));
+    })
+
     return (
+        <>
+        
         <View style={[styles.container, {backgroundColor: props.bgColor}]}>
             <StatusBar style="auto"/>
             
@@ -18,10 +42,19 @@ function TopNav(props={bgColor: '#8eb69b'}) {
 
             {/* Profile */}     
             <TouchableOpacity style={styles.profile}
-                onPress={() => Alert.alert("Points: ")}>
-                <FontAwesome name={'plus-circle'} size={60} color='black'/>
+                onPress={() => navigation.navigate('Profile', {})}>
+                    
+                {logo && <Image style={{ width: 60, height: 60}} source={getLogoImage(logo)}/>}
+                {!logo && <FontAwesome name={'plus-circle'} size={60} color='black'/> }              
+
             </TouchableOpacity>  
         </View>
+
+
+
+        </>
+
+
     );
     };
       

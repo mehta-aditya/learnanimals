@@ -1,13 +1,6 @@
-import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import TopNav from './components/TopNav.js';
 import { ImagesAssets } from '../assets/ImagesAssets';
-import { deleteDatabase } from './Database.js';
-
-
-const MyComponent = () => (
-  <ConfettiCannon count={200} origin={{x: -10, y: 0}} />
-);
 
 const Home = ({navigation}) => {
     return (
